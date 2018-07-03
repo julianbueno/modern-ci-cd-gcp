@@ -12,31 +12,10 @@ or
 ```
 go run main.go
 ```
-https://github.com/GoogleCloudPlatform/container-builder-workshop
 
-```
- gcloud container clusters create 
-```
+## Setup the CI/CD step by step
 
-```
-export PROJECT=
-export CLUSTER=
-export ZONE=
-gcloud config set compute/zone $ZONE
-```
+https://bit.ly/2lQ5oXN
 
-```
- gcloud container clusters get-credentials ${CLUSTER} --project=${PROJECT} --zone=${ZONE}
-```
-```
- PROJECT_NUMBER="$(gcloud projects describe $(gcloud config get-value core/project -q) --format='get(projectNumber)')"
-```
-```
-gcloud projects add-iam-policy-binding ${PROJECT} \
---member=serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com \
---role=roles/container.developer
-```
-
-```
-gcloud container clusters delete
-```
+### References 
+[1] https://github.com/GoogleCloudPlatform/container-builder-workshop
