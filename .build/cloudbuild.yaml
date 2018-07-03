@@ -1,0 +1,52 @@
+steps:
+
+### Build
+
+  - id: 'build'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/$REPO_NAME:${COMMIT_SHA}'
+      - '.'
+### Test
+
+
+### Publish
+  - id: 'publish'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/$REPO_NAME:${COMMIT_SHA}'      
+
+## Deploy
+  - id: 'deploy'
+    name: 'gcr.io/cloud-builders/gcloud'
+    env:
+      #- 'CLOUDSDK_COMPUTE_ZONE=${_CLOUDSDK_COMPUTE_ZONE}'
+      - 'CLOUDSDK_COMPUTE_ZONE=australia-southeast1-b'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=app-cluster'
+      - 'KUBECONFIG=/kube/config'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+          CLUSTER=$$(gcloud config get-value container/cluster)
+          PROJECT=$$(gcloud config get-value core/project)
+          ZONE=$$(gcloud config get-value compute/zone)
+          
+          echo "$${CLUSTER}"
+          echo "$${PROJECT}"
+          echo "$${ZONE}"
+
+          gcloud container clusters get-credentials "$${CLUSTER}" \
+            --project "$${PROJECT}" \
+            --zone "$${ZONE}"  
+
+          sed -i 's|gcr.io/$PROJECT_ID/$REPO_NAME:.*|gcr.io/$PROJECT_ID/$REPO_NAME:${COMMIT_SHA}|' ./.k8s/deployments/golang-web-min.yaml
+          #cat ./.k8s/deployments/golang-web-min.yaml
+          
+          kubectl apply -f .k8s/deployments/golang-web-min.yaml
+          kubectl apply -f .k8s/services/app.yaml
+
+          echo service available at http://`kubectl get service/golang-web-min-frontend -o jsonpath="{.status.loadBalancer.ingress[0].ip}"`

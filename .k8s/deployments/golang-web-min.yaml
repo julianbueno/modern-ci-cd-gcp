@@ -1,0 +1,38 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: golang-web-min
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: golang-web-min
+      labels:
+        app: golang-web-min
+        role: frontend
+        env: dev
+    spec:
+      containers:
+      - name: golang-web-min
+        image: gcr.io/sylvan-server-205610/github-julianbueno-golang-web-minimal:latest
+        resources:
+          limits:
+            cpu: 0.2
+            memory: "10Mi"
+        livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 1  
+        ports:
+        - name: http
+          containerPort: 8080

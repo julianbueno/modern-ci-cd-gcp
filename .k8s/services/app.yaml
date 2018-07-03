@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: golang-web-min-frontend
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: golang-web-min
+    role: frontend
