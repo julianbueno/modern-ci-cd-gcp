@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: golang-web-min
-        image: gcr.io/modern-ci-cd-6074765236/github-julianbueno-modern-ci-cd-gcp:latest
+        image: <change>:latest
         resources:
           limits:
             cpu: 0.2
